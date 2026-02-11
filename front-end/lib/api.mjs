@@ -198,6 +198,15 @@ async function getBloomsByHashtag(hashtag) {
 
 async function postBloom(content) {
   try {
+    if (content.length === 0) {
+      handleErrorDialog(new Error("Bloom cannot be empty"));
+      return {success: false};
+    }
+    if (content.length > 280) {
+      handleErrorDialog(new Error("Bloom cannot exceed 280 characters"));
+      return {success: false};
+    }
+
     const data = await _apiRequest("/bloom", {
       method: "POST",
       body: JSON.stringify({content}),
