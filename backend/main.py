@@ -17,7 +17,7 @@ from endpoints import (
 )
 
 from dotenv import load_dotenv
-from flask import Flask
+from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 
@@ -32,34 +32,47 @@ def main():
     # Configure CORS to handle preflight requests
     CORS(
         app,
+        resources={r"/*": {"origins": "*"}},
         supports_credentials=True,
-        resources={
-            r"/*": {
-                "origins": "*",
-                "allow_headers": ["Content-Type", "Authorization"],
-                "methods": ["GET", "POST", "OPTIONS"],
-            }
-        },
+        allow_headers=["Content-Type", "Authorization"],
+        methods=["GET", "POST", "OPTIONS"]
     )
 
     app.config["JWT_SECRET_KEY"] = os.environ["JWT_SECRET_KEY"]
     jwt = JWTManager(app)
     jwt.user_lookup_loader(lookup_user)
 
+    # JWT error handlers
+    @app.errorhandler(422)
+    def handle_unprocessable_entity(e):
+        return jsonify({"success": False, "message": "Invalid or missing authentication token"}), 401
+
+    @jwt.expired_token_loader
+    def expired_token_callback(jwt_header, jwt_payload):
+        return jsonify({"success": False, "message": "Token has expired"}), 401
+
+    @jwt.invalid_token_loader
+    def invalid_token_callback(error):
+        return jsonify({"success": False, "message": "Invalid token"}), 401
+
+    @jwt.unauthorized_loader
+    def missing_authorization_callback(error):
+        return jsonify({"success": False, "message": "Missing authorization token"}), 401
+
     app.add_url_rule("/register", methods=["POST"], view_func=register)
     app.add_url_rule("/login", methods=["POST"], view_func=login)
 
-    app.add_url_rule("/home", view_func=home_timeline)
+    app.add_url_rule("/home", methods=["GET"], view_func=home_timeline)
 
-    app.add_url_rule("/profile", view_func=self_profile)
-    app.add_url_rule("/profile/<profile_username>", view_func=other_profile)
+    app.add_url_rule("/profile", methods=["GET"], view_func=self_profile)
+    app.add_url_rule("/profile/<profile_username>", methods=["GET"], view_func=other_profile)
     app.add_url_rule("/follow", methods=["POST"], view_func=do_follow)
-    app.add_url_rule("/suggested-follows/<limit_str>", view_func=suggested_follows)
+    app.add_url_rule("/suggested-follows/<limit_str>", methods=["GET"], view_func=suggested_follows)
 
     app.add_url_rule("/bloom", methods=["POST"], view_func=send_bloom)
     app.add_url_rule("/bloom/<id_str>", methods=["GET"], view_func=get_bloom)
-    app.add_url_rule("/blooms/<profile_username>", view_func=user_blooms)
-    app.add_url_rule("/hashtag/<hashtag>", view_func=hashtag)
+    app.add_url_rule("/blooms/<profile_username>", methods=["GET"], view_func=user_blooms)
+    app.add_url_rule("/hashtag/<hashtag>", methods=["GET"], view_func=hashtag)
 
     app.run(host="0.0.0.0", port="3000", debug=True)
 

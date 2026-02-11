@@ -44,10 +44,13 @@ async function _apiRequest(endpoint, options = {}) {
         if (!endpoint.includes("/login") && !endpoint.includes("/register")) {
           state.destroyState();
         }
+        if (!endpoint.includes("/profile")) {
+          handleErrorDialog(error);
+        }
+      } else {
+        handleErrorDialog(error);
       }
 
-      // Pass all errors forward to a dialog on the screen
-      handleErrorDialog(error);
       throw error;
     }
 
