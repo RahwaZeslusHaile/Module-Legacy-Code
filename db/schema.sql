@@ -1,5 +1,6 @@
 
 DROP TABLE IF EXISTS hashtags;
+DROP TABLE IF EXISTS reblooms;
 DROP TABLE IF EXISTS follows;
 DROP TABLE IF EXISTS blooms;
 DROP TABLE IF EXISTS users;
@@ -31,4 +32,12 @@ CREATE TABLE hashtags (
     hashtag VARCHAR NOT NULL,
     bloom_id BIGINT NOT NULL REFERENCES blooms(id),
     UNIQUE(hashtag, bloom_id)
+);
+
+CREATE TABLE reblooms (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(id),
+    bloom_id BIGINT NOT NULL REFERENCES blooms(id),
+    rebloom_timestamp TIMESTAMP NOT NULL,
+    UNIQUE(user_id, bloom_id)
 );
