@@ -15,12 +15,12 @@ import {createHeading} from "../components/heading.mjs";
 // Hashtag view: show all tweets containing this tag
 
 async function hashtagView(hashtag) {
-  destroy();
-
   const normalizedHashtag = hashtag.startsWith("#") ? hashtag : `#${hashtag}`;
   if (state.currentHashtag !== normalizedHashtag) {
     await apiService.getBloomsByHashtag(hashtag);
   }
+
+  destroy();
 
   renderOne(
     state.isLoggedIn,
