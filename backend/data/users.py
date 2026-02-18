@@ -90,7 +90,8 @@ def register_user(username: str, password_plaintext: str) -> User:
 
 
 def scrypt(password_plaintext: bytes, password_salt: bytes) -> bytes:
-    return hashlib.scrypt(password_plaintext, salt=password_salt, n=8, r=8, p=1)
+    # Using pbkdf2_hmac for Python 3.9 compatibility instead of scrypt
+    return hashlib.pbkdf2_hmac('sha256', password_plaintext, password_salt, 100000)
 
 
 SALT_CHARACTERS = string.ascii_uppercase + string.ascii_lowercase + string.digits
