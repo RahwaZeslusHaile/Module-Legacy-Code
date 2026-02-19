@@ -64,7 +64,7 @@ def main():
     writer_access_token = create_user("AS", "neverSt0pTalking")
     send_bloom(
         writer_access_token,
-        "In this essay I will convince you that my views are correct in ways you have never imagined. If it doesn't change your life, read it again. Marshmallows are magnificent. They have great squish, tasty good, and you can even toast them over a fire. Toast them just right until they have a tiny bit of crunch when you bite into them, and have just started melting in the middle.",
+        "In this essay I will convince you that my views are correct in ways you have never imagined. If it doesn't change your life, read it again. Marshmallows are magnificent. They have great squish, tasty good, and you can toast them over a fire.",
     )
 
     justsomeguy_access_token = create_user("JustSomeGuy", "mysterious")
