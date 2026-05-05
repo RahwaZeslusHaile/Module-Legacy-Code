@@ -36,10 +36,11 @@ const createBloom = (template, bloom) => {
 
 function _formatHashtags(text) {
   if (!text) return text;
-  return text.replace(
-    /\B#[^#]+/g,
-    (match) => `<a href="/hashtag/${match.slice(1)}">${match}</a>`
-  );
+  
+  return text.replace(/(^|\s)(#[A-Za-z0-9_]+)/g, (full, prefix, tag) => {
+    const encoded = encodeURIComponent(tag.slice(1));
+    return `${prefix}<a href="/hashtag/${encoded}">${tag}</a>`;
+  });
 }
 
 function _formatTimestamp(timestamp) {
